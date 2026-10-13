@@ -13,8 +13,8 @@
     {
       "binding": "DB",
       "database_name": "apd-race-lab-db",
-      // Sustituir por el id que devuelve `npx wrangler d1 create apd-race-lab-db` antes de desplegar.
-      "database_id": "REPLACE_WITH_D1_ID"
+      // Base de datos de producción (creada con `npx wrangler d1 create apd-race-lab-db`).
+      "database_id": "0bfb32fe-f974-44bb-a54a-1bd8ab402153"
     }
   ],
   "ai": { "binding": "AI" },
