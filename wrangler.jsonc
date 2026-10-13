@@ -1,0 +1,22 @@
+{
+  // APD Race Lab: un único Worker que sirve la API (/api/*) y los estáticos de public/.
+  "name": "apd-race-lab",
+  "main": "src/worker.js",
+  "compatibility_date": "2026-09-01",
+  "workers_dev": true,
+  "assets": {
+    "directory": "./public",
+    "binding": "ASSETS",
+    "run_worker_first": ["/api/*"]
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "apd-race-lab-db",
+      // Sustituir por el id que devuelve `npx wrangler d1 create apd-race-lab-db` antes de desplegar.
+      "database_id": "REPLACE_WITH_D1_ID"
+    }
+  ],
+  "ai": { "binding": "AI" },
+  "observability": { "enabled": true }
+}

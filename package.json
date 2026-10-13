@@ -1,0 +1,15 @@
+{
+  "name": "apd-race-lab",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Estrategia de competición y feedback personalizado para entrenadores de resistencia (Cloudflare Workers + D1 + Workers AI).",
+  "type": "module",
+  "scripts": {
+    "test": "node --test test/*.test.mjs",
+    "seed": "node scripts/seed.mjs > seed.sql",
+    "dev": "wrangler dev"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

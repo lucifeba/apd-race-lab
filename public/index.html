@@ -1,0 +1,280 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>APD Race Lab</title>
+  <meta name="description" content="Estrategia de competición, forma y feedback personalizado para entrenadores de resistencia.">
+  <meta name="theme-color" content="#0c1118">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+  <link rel="stylesheet" href="/css/app.css">
+</head>
+<body>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <!-- ==================== ACCESO ==================== -->
+  <section id="login-view" class="login hidden">
+    <div class="login-card">
+      <div class="brand brand-lg"><span class="logo" aria-hidden="true"></span><span>APD Race Lab</span></div>
+      <p class="muted">Estrategia de competición, forma y feedback personalizado para entrenadores de resistencia.</p>
+      <form id="login-form" class="stack" novalidate>
+        <label class="field"><span>Email</span><input id="login-email" type="email" autocomplete="username" maxlength="254" required></label>
+        <label class="field"><span>Contraseña</span><input id="login-pass" type="password" autocomplete="current-password" maxlength="200" required></label>
+        <button id="login-btn" class="btn primary" type="submit">Entrar</button>
+        <p id="login-error" class="error hidden" role="alert"></p>
+      </form>
+      <div class="demo-hint">
+        <div class="demo-title">Cuenta de prueba</div>
+        <div>Email: <code>jurado@apdracelab.demo</code></div>
+        <div>Contraseña: <code>RaceLab-E7-2026</code></div>
+        <button id="login-fill" class="btn chip" type="button">Rellenar con la cuenta de prueba</button>
+        <p class="small muted">Todos los deportistas y entrenos son ficticios.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== APLICACIÓN ==================== -->
+  <div id="app-view" class="hidden">
+    <header class="topbar">
+      <div class="topbar-in">
+        <div class="brand"><span class="logo" aria-hidden="true"></span><span>APD Race Lab</span></div>
+        <nav class="tabs" aria-label="Secciones">
+          <button class="tab-btn on" data-tab="athletes" type="button">Deportistas</button>
+          <button class="tab-btn" data-tab="race" type="button">Estrategia de competición</button>
+          <button class="tab-btn" data-tab="feedback" type="button">Feedback personalizado</button>
+        </nav>
+        <div class="user"><span id="user-name" class="muted small"></span><button id="logout" class="btn chip" type="button">Salir</button></div>
+      </div>
+    </header>
+
+    <main class="container">
+      <!-- ========== DEPORTISTAS ========== -->
+      <section id="tab-athletes" class="tab">
+        <div class="layout-side">
+          <aside class="panel">
+            <div class="section-head"><h2>Deportistas</h2><button id="ath-new" class="btn chip primary" type="button">Nuevo</button></div>
+            <div id="ath-list" class="ath-list"><p class="hint">Cargando…</p></div>
+          </aside>
+          <div class="stack">
+            <form id="ath-form" class="panel hidden" novalidate>
+              <div class="section-head"><h2 id="ath-form-title">Nuevo deportista</h2></div>
+              <div class="grid-fields">
+                <label class="field span2"><span>Nombre</span><input id="ath-name" type="text" maxlength="80" required></label>
+                <label class="field"><span>Deporte principal</span><select id="ath-sport"><option value="run">Carrera</option><option value="bike">Ciclismo</option><option value="tri">Triatlón</option></select></label>
+                <label class="field"><span>FTP (W)</span><input id="ath-ftp" type="number" min="50" max="600" inputmode="numeric"></label>
+                <label class="field"><span>Ritmo umbral (min:seg/km)</span><input id="ath-runpace" type="text" placeholder="4:30" maxlength="5"></label>
+                <label class="field"><span>VDOT</span><input id="ath-vdot" type="number" step="0.1" min="20" max="90" inputmode="decimal"></label>
+                <label class="field"><span>CSS natación (min:seg/100 m)</span><input id="ath-css" type="text" placeholder="1:50" maxlength="5"></label>
+                <label class="field"><span>LTHR (ppm)</span><input id="ath-lthr" type="number" min="90" max="220" inputmode="numeric"></label>
+                <label class="field"><span>Peso (kg)</span><input id="ath-weight" type="number" step="0.1" min="30" max="200" inputmode="decimal"></label>
+                <label class="field span-all"><span>Notas</span><textarea id="ath-notes" rows="3" maxlength="2000"></textarea></label>
+              </div>
+              <p id="ath-form-error" class="error hidden" role="alert"></p>
+              <div class="btn-row"><button id="ath-save" class="btn primary" type="submit">Guardar</button><button id="ath-cancel" class="btn chip" type="button">Cancelar</button></div>
+            </form>
+
+            <div id="ath-empty" class="panel"><p class="hint">Elige un deportista de la lista o crea uno nuevo. Verás su forma (CTL), fatiga (ATL) y frescura (TSB) calculadas con su carga diaria, y su registro de entrenos.</p></div>
+
+            <div id="ath-detail" class="stack hidden">
+              <div class="panel">
+                <div id="ath-head"></div>
+                <div id="ath-kpis" class="kpi-grid"></div>
+                <div id="ath-chart" class="chart-box"></div>
+              </div>
+              <div class="panel">
+                <div class="section-head">
+                  <h2>Registro de entrenos</h2>
+                  <div class="btn-row"><button id="wk-add-toggle" class="btn chip" type="button">Añadir entreno</button><button id="imp-toggle" class="btn chip" type="button">Importar CSV</button></div>
+                </div>
+                <form id="wk-form" class="subpanel hidden" novalidate>
+                  <div class="grid-fields">
+                    <label class="field"><span>Fecha</span><input id="wk-date" type="date" required></label>
+                    <label class="field"><span>Deporte</span><select id="wk-sport"><option value="run">Carrera</option><option value="bike">Ciclismo</option><option value="swim">Natación</option><option value="strength">Fuerza</option><option value="other">Otros</option></select></label>
+                    <label class="field span2"><span>Título</span><input id="wk-title" type="text" maxlength="120" placeholder="Rodaje suave"></label>
+                    <label class="field"><span>Duración hecha (h:mm)</span><input id="wk-dur" type="text" placeholder="1:15" maxlength="8"></label>
+                    <label class="field"><span>Planificado (h:mm)</span><input id="wk-plan" type="text" placeholder="1:15" maxlength="8"></label>
+                    <label class="field"><span>Distancia (km)</span><input id="wk-dist" type="number" step="0.01" min="0" max="1500" inputmode="decimal"></label>
+                    <label class="field"><span>Carga (TSS)</span><input id="wk-tss" type="number" min="0" max="2000" inputmode="numeric"></label>
+                    <label class="field"><span>RPE (1-10)</span><input id="wk-rpe" type="number" min="0" max="10" inputmode="numeric"></label>
+                    <label class="field"><span>Sensación (1 muy bien · 5 muy mal)</span><input id="wk-feel" type="number" min="0" max="10" inputmode="numeric"></label>
+                    <label class="field span-all"><span>Comentarios del deportista</span><input id="wk-comments" type="text" maxlength="1000"></label>
+                  </div>
+                  <p id="wk-error" class="error hidden" role="alert"></p>
+                  <div class="btn-row"><button id="wk-save" class="btn primary" type="submit">Guardar entreno</button></div>
+                </form>
+                <div id="imp-panel" class="subpanel hidden">
+                  <p class="hint">Exportación de entrenos de TrainingPeaks (CSV): Title, WorkoutType, WorkoutDay, TimeTotalInHours, DistanceInMeters, TSS, PlannedDuration, Rpe, Feeling, AthleteComments. Separador coma o punto y coma; máximo 3000 filas. Las filas repetidas se omiten.</p>
+                  <label class="field"><span>Archivo CSV</span><input id="imp-file" type="file" accept=".csv,text/csv,text/plain"></label>
+                  <div id="imp-map"></div>
+                  <div id="imp-preview"></div>
+                  <div class="btn-row"><button id="imp-run" class="btn primary hidden" type="button">Importar</button></div>
+                  <p id="imp-result" class="hint"></p>
+                </div>
+                <div id="wk-list"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========== ESTRATEGIA DE COMPETICIÓN ========== -->
+      <section id="tab-race" class="tab hidden">
+        <div class="layout-two">
+          <div class="panel">
+            <div class="section-head"><h2>Estrategia de competición</h2></div>
+            <p class="hint">Pacing de ritmo o potencia y plan de nutrición para el día de la prueba. Sube el track (o escribe distancia y desnivel), contesta unas preguntas y salen tres escenarios (optimista, normal y menos favorable) con los umbrales y la forma actual del deportista.</p>
+
+            <div class="rc-step"><b>1</b> Modalidad</div>
+            <div class="btn-row" id="rc-modes">
+              <button class="btn chip primary" data-rc-sport="run" type="button">Carrera</button>
+              <button class="btn chip" data-rc-sport="bike" type="button">Ciclismo</button>
+              <button class="btn chip" data-rc-sport="tri" type="button">Triatlón</button>
+            </div>
+
+            <div class="rc-step"><b>2</b> Deportista</div>
+            <div class="grid-fields">
+              <label class="field"><span>Deportista</span><select id="rc-athlete"><option value="">Datos manuales</option></select></label>
+              <label class="field"><span>Nombre de la prueba</span><input id="rc-name" type="text" maxlength="120" placeholder="Media maratón de ejemplo"></label>
+              <label class="field"><span>Fecha</span><input id="rc-date" type="date"></label>
+            </div>
+            <div class="btn-row"><button id="rc-demo" class="btn chip" type="button">Deportista de ejemplo</button></div>
+            <p id="rc-history-status" class="hint"></p>
+            <div class="grid-fields">
+              <label class="field rc-bike"><span>FTP (W)</span><input id="rc-ftp" type="number" min="50" max="600"></label>
+              <label class="field rc-run"><span>Ritmo umbral (min/km)</span><input id="rc-runpace" type="text" placeholder="4:30" maxlength="5"></label>
+              <label class="field rc-run"><span>VDOT (si está, manda sobre el umbral)</span><input id="rc-vdot" type="number" step="0.1" min="20" max="90"></label>
+              <label class="field rc-swim hidden"><span>CSS (min/100 m)</span><input id="rc-css" type="text" placeholder="1:50" maxlength="5"></label>
+              <label class="field"><span>LTHR (ppm)</span><input id="rc-lthr" type="number" min="90" max="220"></label>
+              <label class="field"><span>Peso (kg)</span><input id="rc-weight" type="number" step="0.1" min="30" max="200"></label>
+              <label class="field"><span>Forma actual (CTL)</span><input id="rc-ctl" type="number" min="0" max="250"></label>
+            </div>
+
+            <div class="rc-step"><b>3</b> Recorrido</div>
+            <div class="grid-fields rc-tri-only hidden">
+              <label class="field"><span>Distancia de triatlón</span>
+                <select id="rc-tri-dist"><option value="sprint">Sprint (0,75 / 20 / 5)</option><option value="olimpico" selected>Olímpico (1,5 / 40 / 10)</option><option value="703">Half 70.3 (1,9 / 90 / 21,1)</option><option value="ironman">Ironman (3,8 / 180 / 42,2)</option></select></label>
+              <label class="field"><span>Neopreno</span><select id="rc-wetsuit"><option value="1">Sí</option><option value="0">No</option></select></label>
+            </div>
+            <div class="subpanel">
+              <div class="rc-course-title" id="rc-course-main-title">Track de la prueba</div>
+              <div class="grid-fields">
+                <label class="field"><span>Archivo GPX o TCX</span><input id="rc-gpx" type="file" accept=".gpx,.tcx,application/gpx+xml,application/xml,text/xml"></label>
+                <label class="field"><span>o distancia (km)</span><input id="rc-dist" type="number" step="0.1" min="0.1" max="1000"></label>
+                <label class="field"><span>Desnivel + (m)</span><input id="rc-gain" type="number" min="0" max="20000"></label>
+              </div>
+              <p id="rc-gpx-status" class="hint"></p>
+            </div>
+            <div class="subpanel rc-tri-only hidden">
+              <div class="rc-course-title">Track de la carrera a pie</div>
+              <div class="grid-fields">
+                <label class="field"><span>Archivo GPX o TCX</span><input id="rc-gpx-run" type="file" accept=".gpx,.tcx,application/gpx+xml,application/xml,text/xml"></label>
+                <label class="field"><span>o distancia (km)</span><input id="rc-dist-run" type="number" step="0.1" min="0.1" max="100"></label>
+                <label class="field"><span>Desnivel + (m)</span><input id="rc-gain-run" type="number" min="0" max="5000"></label>
+              </div>
+              <p id="rc-gpx-run-status" class="hint"></p>
+            </div>
+            <div class="grid-fields">
+              <label class="field rc-run-only"><span>Terreno</span><select id="rc-surface"><option value="asfalto">Asfalto</option><option value="trail">Trail</option><option value="tecnico">Trail técnico</option></select></label>
+              <label class="field rc-bike-only hidden"><span>Bicicleta</span><select id="rc-bike"><option value="carretera">Carretera</option><option value="cabra">Contrarreloj / triatlón</option><option value="gravel">Gravel</option><option value="mtb">MTB</option></select></label>
+              <label class="field rc-bike-solo hidden"><span>Ir en grupo</span><select id="rc-draft"><option value="0">No, en solitario</option><option value="1">Sí, a rueda buena parte</option></select></label>
+            </div>
+
+            <div class="rc-step"><b>4</b> Preguntas para los escenarios</div>
+            <div class="grid-fields">
+              <label class="field"><span>¿Qué intensidad buscamos?</span>
+                <select id="rc-intent"><option value="disfrutar">Disfrutar y terminar</option><option value="controlado">Controlado</option><option value="exigente" selected>Exigente (objetivo de marca)</option><option value="atope">A tope</option></select></label>
+              <label class="field"><span>Temperatura prevista (°C)</span><input id="rc-temp" type="number" value="16" min="-10" max="45"></label>
+              <label class="field"><span>Viento</span><select id="rc-wind"><option value="0">Sin viento</option><option value="1">Moderado</option><option value="2">Fuerte</option></select></label>
+              <label class="field"><span>¿Tolera bien los hidratos en carrera?</span><select id="rc-gut"><option value="baja">Poco entrenado (hasta 60 g/h)</option><option value="media" selected>Normal (hasta 80 g/h)</option><option value="alta">Entrenado (90-110 g/h)</option></select></label>
+              <label class="field"><span>¿Cuánto suda?</span><select id="rc-sweat"><option value="poca">Poco</option><option value="normal" selected>Normal</option><option value="mucha">Mucho o con cerco de sal</option></select></label>
+              <label class="field"><span>Cafeína</span><select id="rc-caffeine"><option value="1">Sí, la tolera</option><option value="0">No</option></select></label>
+              <label class="field"><span>¿Ha hecho antes esta distancia?</span><select id="rc-exp"><option value="no">Es la primera vez</option><option value="si">Sí, ya la conoce</option></select></label>
+              <label class="field span2"><span>Notas (avituallamientos, molestias, objetivo de tiempo…)</span><input id="rc-notes" type="text" maxlength="400" placeholder="Avituallamientos cada 5 km; quiere bajar de 1:30"></label>
+            </div>
+            <div class="btn-row top-gap">
+              <button id="rc-calc" class="btn primary" type="button">Calcular estrategia</button>
+              <select id="rc-saved" class="select-chip" aria-label="Estrategias guardadas"><option value="">Estrategias guardadas…</option></select>
+              <button id="rc-delete" class="btn chip danger hidden" type="button">Borrar la guardada</button>
+            </div>
+            <p id="rc-error" class="error hidden" role="alert"></p>
+          </div>
+
+          <div class="panel">
+            <div class="section-head">
+              <h2>Plan de carrera</h2>
+              <div class="btn-row">
+                <button id="rc-print" class="btn chip hidden" type="button">Tarjeta para imprimir</button>
+                <button id="rc-wa" class="btn chip hidden" type="button">Copiar para WhatsApp</button>
+                <button id="rc-save" class="btn chip primary hidden" type="button">Guardar</button>
+              </div>
+            </div>
+            <div id="rc-result"><p class="hint">Aquí aparecen los tres escenarios, el perfil, la tarjeta de carrera por tramos (ritmo o potencia, paso acumulado y tomas) y las claves para el día de la prueba.</p></div>
+            <div class="section-head hidden" id="rc-ai-head"><h2>Explicación del entrenador (IA)</h2><button id="rc-ai" class="btn chip primary" type="button">Redactar con IA</button></div>
+            <div id="rc-ai-out"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========== FEEDBACK PERSONALIZADO ========== -->
+      <section id="tab-feedback" class="tab hidden">
+        <div class="layout-two">
+          <div class="panel">
+            <div class="section-head"><h2>Feedback personalizado</h2></div>
+            <p class="hint">Elige deportista y periodo: se comparan sus entrenos con el periodo anterior de igual duración y se redacta un feedback con lo que ha mejorado, lo que hay que seguir trabajando, los próximos pasos y un cierre de ánimo. Sale en dos versiones: para enviar por escrito y para leer en voz alta.</p>
+            <div class="grid-fields">
+              <label class="field"><span>Deportista</span><select id="fb-athlete"></select></label>
+              <label class="field"><span>Desde</span><input id="fb-start" type="date"></label>
+              <label class="field"><span>Hasta</span><input id="fb-end" type="date"></label>
+            </div>
+            <div class="btn-row">
+              <button class="btn chip fb-quick" data-days="7" type="button">Última semana</button>
+              <button class="btn chip fb-quick" data-days="28" type="button">4 semanas</button>
+              <button class="btn chip fb-quick" data-days="month" type="button">Mes pasado</button>
+              <button class="btn chip fb-quick" data-days="90" type="button">3 meses</button>
+              <button class="btn chip fb-quick" data-days="year" type="button">Desde el 1 de enero</button>
+            </div>
+            <div class="grid-fields">
+              <label class="field"><span>Tono</span><select id="fb-tone"><option value="cercano">Cercano</option><option value="motivador">Motivador</option><option value="tecnico">Más técnico</option></select></label>
+              <label class="field"><span>Extensión</span><select id="fb-length"><option value="breve">Breve</option><option value="detallado" selected>Detallado</option></select></label>
+              <label class="field span2"><span>Foco o contexto (opcional)</span><input id="fb-focus" type="text" maxlength="300" placeholder="Prepara la media maratón; viene de una molestia en el sóleo"></label>
+            </div>
+            <div class="btn-row top-gap"><button id="fb-run" class="btn primary" type="button">Generar feedback</button></div>
+            <p id="fb-status" class="hint"></p>
+            <div id="fb-facts"></div>
+          </div>
+          <div class="panel">
+            <div class="section-head">
+              <h2>Feedback del periodo</h2>
+              <div class="btn-row">
+                <button id="fb-print" class="btn chip hidden" type="button">Informe PDF</button>
+                <button id="fb-save" class="btn chip primary hidden" type="button">Guardar</button>
+              </div>
+            </div>
+            <div id="fb-out"><p class="hint">Aquí aparecerá el feedback en dos versiones editables, listo para copiar, abrir en WhatsApp o escuchar en voz alta.</p></div>
+            <div class="section-head hidden" id="fb-hist-head"><h2>Feedbacks anteriores</h2></div>
+            <div id="fb-hist"></div>
+          </div>
+        </div>
+      </section>
+    </main>
+    <footer class="foot">APD Race Lab · Hackathon de Vibe Coding E7 (Big School) · Todos los datos de la cuenta de prueba son ficticios.</footer>
+  </div>
+
+  <script src="/js/util.js"></script>
+  <script src="/js/api.js"></script>
+  <script src="/js/fitness.js"></script>
+  <script src="/js/csv.js"></script>
+  <script src="/js/print.js"></script>
+  <script src="/js/race-engine.js"></script>
+  <script src="/js/feedback-core.js"></script>
+  <script src="/js/athletes.js"></script>
+  <script src="/js/import.js"></script>
+  <script src="/js/race-view.js"></script>
+  <script src="/js/race.js"></script>
+  <script src="/js/feedback.js"></script>
+  <script src="/js/app.js"></script>
+</body>
+</html>
