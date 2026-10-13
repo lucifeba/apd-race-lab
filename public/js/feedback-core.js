@@ -115,7 +115,7 @@ ${JSON.stringify({ periodo: f.cur, periodoAnterior: f.prev, forma: f.forma, lect
 ${steps}${o.focus ? `\nFOCO QUE PIDE EL ENTRENADOR: ${o.focus}` : ""}${f.ctx ? `\nCONTEXTO DEL DEPORTISTA\n${f.ctx}` : ""}
 
 DEVUELVE SOLO UN JSON con estas claves:
-- "escrito": mensaje para WhatsApp, empieza "Hola ${name}!". Cuatro bloques con su título en una línea propia entre asteriscos (*Lo que hemos mejorado*, *Lo que hay que seguir mejorando*, *Próximos pasos*, y un cierre de ánimo sin título). Próximos pasos: 2-4 acciones concretas y medibles para el siguiente periodo.${f.prevSteps ? " Incluye si se cumplieron los pasos del feedback anterior." : ""}
+- "escrito": mensaje para WhatsApp, empieza "Hola ${name}!". Escribe las cifras con números (por ejemplo "35,8 h"), como mucho 4 cifras en todo el mensaje, y deja una línea en blanco entre bloques. Cuatro bloques con su título en una línea propia entre asteriscos (*Lo que hemos mejorado*, *Lo que hay que seguir mejorando*, *Próximos pasos*, y un cierre de ánimo sin título). Próximos pasos: 2-4 acciones concretas y medibles para el siguiente periodo.${f.prevSteps ? " Incluye si se cumplieron los pasos del feedback anterior." : ""}
 - "audio": el mismo mensaje para leerlo en voz alta como nota de voz: frases cortas, sin asteriscos, sin listas, sin siglas ni símbolos, máximo 4 cifras dichas como se dicen en voz alta ("cuatro horas y media").
 - "mejorado": lista de 2-4 frases cortas.
 - "mejorar": lista de 1-3 frases cortas.
