@@ -41,7 +41,7 @@ Navegador (HTML + CSS + JS sin frameworks ni compilación)
   public/js/api.js           cliente /api (Bearer en localStorage) + caché de deportistas
   public/js/fitness.js       CTL / ATL / TSB y gráfico SVG            (puro, probado en Node)
   public/js/csv.js           importación CSV tolerante                (puro, probado en Node)
-  public/js/race-engine.js   motor de pacing y nutrición (copiado tal cual del Session Builder, probado en Node)
+  public/js/race-engine.js   motor de pacing y nutrición (escrito el 13/10/2026 en esta misma sesión de Claude Code, probado en Node)
   public/js/feedback-core.js hechos, lecturas, prompt, respaldo, parseo (puro, probado en Node)
   public/js/athletes.js · import.js · race.js · race-view.js · feedback.js · print.js · app.js  (interfaz)
         │  fetch JSON {ok, data?, error?}
@@ -91,7 +91,7 @@ npx wrangler d1 execute apd-race-lab-db --local --file seed.sql
 npx wrangler dev                           # http://localhost:8787
 ```
 
-- En local, D1 funciona con el `database_id` de marcador (`REPLACE_WITH_D1_ID`).
+- En local, D1 funciona con cualquier `database_id` (el de `wrangler.jsonc` es el de producción).
 - Workers AI siempre usa la cuenta remota, también en `wrangler dev`, y necesita `npx wrangler login`. Sin IA, el feedback usa su texto de respaldo y la estrategia funciona igual.
 - `SEED_END=AAAA-MM-DD npm run seed` mueve el último día con entrenos hechos (por defecto el 12/10/2026) para que los periodos rápidos tengan datos si se revisa más tarde.
 
@@ -99,7 +99,7 @@ npx wrangler dev                           # http://localhost:8787
 
 ```bash
 npx wrangler d1 create apd-race-lab-db                     # copia el database_id que devuelve
-# pega el id en wrangler.jsonc, en lugar de REPLACE_WITH_D1_ID
+# pega el id en wrangler.jsonc (database_id)
 npx wrangler d1 execute apd-race-lab-db --remote --file schema.sql
 npx wrangler d1 execute apd-race-lab-db --remote --file seed.sql
 npx wrangler deploy
@@ -154,4 +154,4 @@ Nota: el script de pruebas es `node --test test/*.test.mjs`, porque Node 24 no a
 - La impresión depende de que el navegador permita la ventana emergente.
 - La síntesis de voz depende de las voces es-ES que tenga el sistema.
 - La interfaz es solo en castellano y con tema oscuro.
-- `race-engine.js` (543 líneas) se ha copiado sin cambios desde el Session Builder junto con sus pruebas.
+- `race-engine.js` (543 líneas) se generó el 13/10/2026 en esta misma sesión de Claude Code, primero como módulo de prueba dentro del Session Builder del autor, y se trajo sin cambios junto con sus pruebas.
